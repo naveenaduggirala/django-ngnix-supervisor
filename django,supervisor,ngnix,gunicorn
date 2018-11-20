@@ -69,6 +69,11 @@ server {
 }
 
 
+sudo service ngnix start
+sudo service ngnix stop
+sudo service ngnix status
+sudo service ngnix restart
+sudo tail -f /var/log/nginx/*.log
 
 
 
