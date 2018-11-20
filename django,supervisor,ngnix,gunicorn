@@ -1,0 +1,77 @@
+Django,Gunicorn,Ngnix,Supervisor
+
+
+Install gunicorn
+----------------
+pip install gunicorn
+
+Install nginx
+-------------
+sudo apt-get install nginx
+
+Intsall supervisor
+------------------
+pip install supervisor
+
+
+
+create a supervisor.conf file in ur project path
+------------------------------------------------
+[inet_http_server]
+port = localhost:9001
+
+[supervisord]
+logfile = supervisord.log
+pidfile = supervisord.pid
+
+[supervisorctl]
+serverurl = http://localhost:9001
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[program:jnm-django-server]
+command=gunicorn -b 0.0.0.0:8085 --workers=4  --timeout=500  jdmapi.wsgi
+stdout_logfile=./django.log
+stderr_logfile=./django.log
+stderr_events_enabled=true
+
+
+supervisorctl
+supervisorctl shutdown
+supervisorctl restart all
+
+
+create a example.conf file in /etc/ngnix/sites-enabled
+------------------------------------------------------
+server {
+        listen portnumber;
+        root /home/administrator/Projects/esubcenterassessment;
+        server_name ip address;
+
+
+        location /static {
+            root /home/administrator/Projects/esubcenterassessment;
+        }
+
+         location /media {
+            root /home/administrator/Projects/esubcenterassessment;
+        }
+
+
+        location / {
+         proxy_pass http://127.0.0.1:8085;
+         # WebSocket support (nginx 1.4)
+         proxy_http_version 1.1;
+         proxy_set_header Upgrade $http_upgrade;
+         proxy_set_header Connection "upgrade";
+         }
+}
+
+
+
+
+
+
+
+
